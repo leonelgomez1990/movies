@@ -1,12 +1,13 @@
 package com.lgomez.movies.ui.fragments
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.lgomez.movies.R
+import com.lgomez.movies.databinding.FragmentMoviesMasterBinding
 import com.lgomez.movies.ui.viewmodels.MoviesMasterViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,19 +18,16 @@ class MoviesMasterFragment : Fragment() {
         fun newInstance() = MoviesMasterFragment()
     }
 
-    private lateinit var viewModel: MoviesMasterViewModel
+    private var _binding: FragmentMoviesMasterBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: MoviesMasterViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_movies_master, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MoviesMasterViewModel::class.java)
-        // TODO: Use the ViewModel
+        _binding = FragmentMoviesMasterBinding.inflate(layoutInflater)
+        return binding.root
     }
 
 }
