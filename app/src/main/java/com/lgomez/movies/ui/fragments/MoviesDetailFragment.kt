@@ -61,6 +61,7 @@ class MoviesDetailFragment : Fragment() {
                 enableUI(false)
             }
             is BaseViewState.Ready -> {
+                updateUI()
                 enableUI(true)
             }
         }
@@ -80,10 +81,13 @@ class MoviesDetailFragment : Fragment() {
     }
 
     private fun updateMovieDetailsUI(movie: MovieUI) {
-        with(binding) {
-            textView.text = movie.test
-        }
+        viewModel.movie = movie
+    }
 
+    private fun updateUI() {
+        with(binding) {
+            textView.text = viewModel.movie.title
+        }
     }
 
 }

@@ -72,6 +72,7 @@ class MoviesMasterFragment : Fragment() {
                 enableUI(false)
             }
             is BaseViewState.Ready -> {
+                updateUI()
                 enableUI(true)
             }
         }
@@ -88,6 +89,12 @@ class MoviesMasterFragment : Fragment() {
 
     private fun handleExceptions(e: Exception) {
 
+    }
+
+    private fun updateUI() {
+        with(binding) {
+            textView.text = viewModel.movie.title
+        }
     }
 
 
