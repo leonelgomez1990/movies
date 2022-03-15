@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lgomez.movies.core.utils.MyResult
 import com.lgomez.movies.core.utils.SingleLiveEvent
+import com.lgomez.movies.domain.model.PopularMovies
 import com.lgomez.movies.domain.usecases.GetPopularMoviesUseCase
 import com.lgomez.movies.ui.model.MovieUI
 import com.lgomez.movies.ui.navigatorstates.MoviesMasterNavigatorStates
@@ -24,7 +25,8 @@ class MoviesMasterViewModel @Inject constructor(
     private val _navigation = SingleLiveEvent<MoviesMasterNavigatorStates>()
     val navigation: LiveData<MoviesMasterNavigatorStates> get() = _navigation
 
-    val movie = MovieUI(id = 1)
+    private val _movies: MutableLiveData<MutableList<PopularMovies>> = MutableLiveData()
+    val movies: LiveData<MutableList<PopularMovies>> get() = _movies
 
     init {
         refreshUI()
@@ -46,7 +48,7 @@ class MoviesMasterViewModel @Inject constructor(
                     _viewState.value = BaseViewState.Failure(result.exception)
                 }
                 is MyResult.Success -> {
-                    movie.title = "Spiderman"
+                    _movies.value = result.data.toMutableList()
                     _viewState.value = BaseViewState.Ready
                 }
             }

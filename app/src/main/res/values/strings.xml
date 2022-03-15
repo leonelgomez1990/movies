@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Movies App</string>
+    <string name="button_accept">Aceptar</string>
+    <string name="msg_alert_empty_movies_title">Ops, sin películas</string>
+    <string name="msg_alert_empty_movies_body">Parece que no hay películas disponibles, intente nuevamente más tarde</string>
+    <string name="fragment_movies_master_head">PELÍCULAS POPULARES</string>
 </resources>

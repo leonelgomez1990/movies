@@ -1,5 +1,6 @@
 package com.lgomez.movies.ui.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,7 +9,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import com.lgomez.movies.R
 import com.lgomez.movies.databinding.FragmentMoviesMasterBinding
+import com.lgomez.movies.domain.model.PopularMovies
+import com.lgomez.movies.ui.adapters.PopularMoviesItemAdapter
+import com.lgomez.movies.ui.model.toMovieUI
 import com.lgomez.movies.ui.navigatorstates.MoviesMasterNavigatorStates
 import com.lgomez.movies.ui.viewmodels.MoviesMasterViewModel
 import com.lgomez.movies.ui.viewstates.BaseViewState
@@ -43,11 +49,13 @@ class MoviesMasterFragment : Fragment() {
     private fun setObservers() {
         viewModel.navigation.observe(viewLifecycleOwner, Observer { handleNavigation(it) })
         viewModel.viewState.observe(viewLifecycleOwner, Observer { handleViewStates(it) })
+        viewModel.movies.observe(
+            viewLifecycleOwner,
+            Observer { setupPopularMoviesRecyclerView(it) })
     }
 
     private fun setListeners() {
         binding.swipeRefresh.setOnRefreshListener { viewModel.refreshUI() }
-        binding.textView.setOnClickListener { viewModel.goToMoviesDetail(viewModel.movie) }
     }
 
     private fun handleNavigation(navigation: MoviesMasterNavigatorStates) {
@@ -93,9 +101,34 @@ class MoviesMasterFragment : Fragment() {
 
     private fun updateUI() {
         with(binding) {
-            textView.text = viewModel.movie.title
         }
     }
 
+    private fun setupPopularMoviesRecyclerView(list: MutableList<PopularMovies>) {
+        val adapter = PopularMoviesItemAdapter()
 
+        if (list.isEmpty() && viewModel.viewState.value is BaseViewState.Ready) {
+            showDialog(
+                resources.getString(R.string.msg_alert_empty_movies_title),
+                resources.getString(R.string.msg_alert_empty_movies_body)
+            )
+        }
+
+        adapter.setData(list)
+        adapter.onClickListener = { viewModel.goToMoviesDetail(it.toMovieUI()) }
+
+        with(binding) {
+            rvMovies.setHasFixedSize(true)
+            rvMovies.layoutManager = GridLayoutManager(context, 1)
+            rvMovies.adapter = adapter
+        }
+    }
+
+    private fun showDialog(title: String, message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(R.string.button_accept) { _, _ -> }
+            .show()
+    }
 }

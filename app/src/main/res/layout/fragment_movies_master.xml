@@ -64,13 +64,32 @@
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:text="Master view"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="@id/guideline_left"
+                    android:layout_height="wrap_content"
+                    android:elevation="10dp"
+                    android:letterSpacing="0.2"
+                    android:shadowColor="@android:color/darker_gray"
+                    android:text="@string/fragment_movies_master_head"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_right"
+                    app:layout_constraintStart_toEndOf="@id/guideline_left"
                     app:layout_constraintTop_toTopOf="@id/guideline_top" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvMovies"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:clipToPadding="false"
+                    android:padding="10dp"
+                    android:scrollbars="vertical"
+                    app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
+                    app:layout_constraintEnd_toStartOf="@id/guideline_right"
+                    app:layout_constraintStart_toEndOf="@id/guideline_left"
+                    app:layout_constraintTop_toBottomOf="@id/textView"
+                    tools:listitem="@layout/item_recycler_popular_movies" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

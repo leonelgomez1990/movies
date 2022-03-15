@@ -2,6 +2,7 @@ package com.lgomez.movies.ui.model
 
 import android.os.Parcelable
 import com.lgomez.movies.domain.model.DetailsMovie
+import com.lgomez.movies.domain.model.PopularMovies
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -19,3 +20,12 @@ class MovieUI(
 
 fun DetailsMovie.toMovieUI(): MovieUI =
     MovieUI(id, title, cover, genres, originalLanguage, popularity, releaseDate)
+
+fun PopularMovies.toMovieUI(): MovieUI =
+    MovieUI(id, title, cover, listOf(), "", 0, "")
+
+fun MovieUI.toDetailsMovie(): DetailsMovie =
+    DetailsMovie(id, title, cover, genres, originalLanguage, popularity, releaseDate)
+
+fun MovieUI.toPopularMovie(): PopularMovies =
+    PopularMovies(id, title, cover)
