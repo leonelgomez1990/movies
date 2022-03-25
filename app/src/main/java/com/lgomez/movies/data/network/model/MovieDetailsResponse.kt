@@ -17,7 +17,7 @@ class MovieDetailsResponse(
     @SerializedName("backdrop_path")
     var backdropPath: String?,
     @SerializedName("belongs_to_collection")
-    var belongsToCollection: String?,
+    var belongsToCollection: BelongsToCollection?,
     var budget: Int,
     var genres: List<Genres>,
     var homepage: String?,
