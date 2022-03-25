@@ -20,7 +20,8 @@ class MoviesDetailViewModel @Inject constructor(
     private val _viewState: MutableLiveData<BaseViewState> = MutableLiveData()
     val viewState: LiveData<BaseViewState> get() = _viewState
 
-    var movie = MovieUI(id = 1)
+    private var _movie: MovieUI = MovieUI()
+    val movie: MovieUI get() = _movie
 
     init {
     }
@@ -29,13 +30,20 @@ class MoviesDetailViewModel @Inject constructor(
         getDetailsMovie(movie.id)
     }
 
+    fun setMovie(newMovie: MovieUI) {
+        _movie = newMovie
+        getDetailsMovie(newMovie.id)
+    }
+
     private fun getDetailsMovie(movieId: Int) {
         viewModelScope.launch {
             _viewState.value = BaseViewState.Loading
-            when(val result = getDetailsMovieUseCase(movieId)) {
-                is MyResult.Failure -> { _viewState.value = BaseViewState.Failure(result.exception) }
+            when (val result = getDetailsMovieUseCase(movieId)) {
+                is MyResult.Failure -> {
+                    _viewState.value = BaseViewState.Failure(result.exception)
+                }
                 is MyResult.Success -> {
-                    movie = result.data.toMovieUI()
+                    _movie = result.data.toMovieUI()
                     _viewState.value = BaseViewState.Ready
                 }
             }

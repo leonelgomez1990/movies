@@ -81,7 +81,7 @@ class MoviesDetailFragment : Fragment() {
     }
 
     private fun updateMovieDetailsUI(movie: MovieUI) {
-        viewModel.movie = movie
+        viewModel.setMovie(movie)
     }
 
     private fun updateUI() {

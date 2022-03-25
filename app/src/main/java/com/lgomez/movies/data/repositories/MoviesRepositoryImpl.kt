@@ -14,6 +14,6 @@ class MoviesRepositoryImpl(
     }
 
     override suspend fun getDetailsMovie(movieId: Int): MyResult<DetailsMovie> {
-        return MyResult.Success(DetailsMovie(1, "Batman", "", listOf(), "", 0, ""))
+        return moviesNetworkDataSource.getDetailsMovie(movieId)
     }
 }
