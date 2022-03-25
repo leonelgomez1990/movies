@@ -20,4 +20,9 @@ interface MoviesProvider {
         @Query("api_key") apiKey: String,
         @Query("language") languageCode: String
     ): MovieDetailsResponse
+
+    @GET("configuration/primary_translations?")
+    suspend fun getPrimaryTranslations(
+        @Query("api_key") apiKey: String
+    ): List<String>
 }

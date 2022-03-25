@@ -7,4 +7,5 @@ import com.lgomez.movies.domain.model.PopularMovies
 interface MoviesRepository {
     suspend fun getPopularMovies(): MyResult<List<PopularMovies>>
     suspend fun getDetailsMovie(movieId: Int): MyResult<DetailsMovie>
+    suspend fun getAvailableLanguages(): MyResult<List<String>>
 }

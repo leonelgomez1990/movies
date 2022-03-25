@@ -4,6 +4,7 @@ import com.lgomez.movies.data.network.MoviesNetworkDataSource
 import com.lgomez.movies.data.network.MoviesProvider
 import com.lgomez.movies.data.repositories.MoviesRepositoryImpl
 import com.lgomez.movies.domain.repositories.MoviesRepository
+import com.lgomez.movies.domain.usecases.ConfigureLanguage
 import com.lgomez.movies.domain.usecases.GetDetailsMovieUseCase
 import com.lgomez.movies.domain.usecases.GetPopularMoviesUseCase
 import com.lgomez.movies.ui.viewmodels.MoviesDetailViewModel
@@ -64,14 +65,22 @@ object AppModule {
     fun provideGetDetailsMovieUseCase(moviesRepository: MoviesRepository): GetDetailsMovieUseCase =
         GetDetailsMovieUseCase(moviesRepository)
 
+    @Provides
+    fun provideConfigureLanguage(moviesRepository: MoviesRepository): ConfigureLanguage =
+        ConfigureLanguage(moviesRepository)
 
     // Viewmodel provides
     @Provides
-    fun provideMoviesMasterViewModel(getPopularMoviesUseCase: GetPopularMoviesUseCase): MoviesMasterViewModel =
-        MoviesMasterViewModel(getPopularMoviesUseCase)
+    fun provideMoviesMasterViewModel(
+        getPopularMoviesUseCase: GetPopularMoviesUseCase,
+        configureLanguage: ConfigureLanguage
+    ): MoviesMasterViewModel =
+        MoviesMasterViewModel(getPopularMoviesUseCase, configureLanguage)
 
     @Provides
-    fun provideMoviesDetailViewModel(getDetailsMovieUseCase: GetDetailsMovieUseCase): MoviesDetailViewModel =
+    fun provideMoviesDetailViewModel(
+        getDetailsMovieUseCase: GetDetailsMovieUseCase
+    ): MoviesDetailViewModel =
         MoviesDetailViewModel(getDetailsMovieUseCase)
 
 }

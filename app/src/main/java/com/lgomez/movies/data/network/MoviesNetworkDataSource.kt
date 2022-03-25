@@ -51,4 +51,17 @@ class MoviesNetworkDataSource(
             MyResult.Failure(e)
         }
     }
+
+    suspend fun getPrimaryTranslations(): MyResult<List<String>> {
+        return try {
+            Log.d(TAG, "getPrimaryTranslations:try to get data")
+            val apiResponse = moviesProvider.getPrimaryTranslations(API_KEY)
+
+            Log.d(TAG, "getPrimaryTranslations:success")
+            MyResult.Success(apiResponse)
+        } catch (e: Exception) {
+            Log.e(TAG, "getPrimaryTranslations:failure, Exception thrown: ${e.message}")
+            MyResult.Failure(e)
+        }
+    }
 }

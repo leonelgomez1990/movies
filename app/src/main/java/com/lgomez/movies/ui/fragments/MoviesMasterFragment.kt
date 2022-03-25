@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -33,7 +33,7 @@ class MoviesMasterFragment : Fragment() {
 
     private var _binding: FragmentMoviesMasterBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MoviesMasterViewModel by viewModels()
+    private val viewModel: MoviesMasterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

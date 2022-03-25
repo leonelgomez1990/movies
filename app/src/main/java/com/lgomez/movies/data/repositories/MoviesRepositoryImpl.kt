@@ -16,4 +16,8 @@ class MoviesRepositoryImpl(
     override suspend fun getDetailsMovie(movieId: Int): MyResult<DetailsMovie> {
         return moviesNetworkDataSource.getDetailsMovie(movieId)
     }
+
+    override suspend fun getAvailableLanguages(): MyResult<List<String>> {
+        return moviesNetworkDataSource.getPrimaryTranslations()
+    }
 }
