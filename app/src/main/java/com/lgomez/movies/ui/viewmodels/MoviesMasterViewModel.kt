@@ -32,6 +32,10 @@ class MoviesMasterViewModel @Inject constructor(
         refreshUI()
     }
 
+    fun setReadyState() {
+        _viewState.value = BaseViewState.Ready
+    }
+
     fun goToMoviesDetail(movie: MovieUI) {
         _navigation.value = MoviesMasterNavigatorStates.ToMoviesDetail(movie)
     }

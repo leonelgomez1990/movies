@@ -2,6 +2,7 @@ package com.lgomez.movies.ui.fragments
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +11,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.lgomez.movies.R
+import com.lgomez.movies.core.utils.snack
 import com.lgomez.movies.databinding.FragmentMoviesMasterBinding
 import com.lgomez.movies.domain.model.PopularMovies
 import com.lgomez.movies.ui.adapters.PopularMoviesItemAdapter
@@ -71,10 +74,11 @@ class MoviesMasterFragment : Fragment() {
     }
 
     private fun handleViewStates(state: BaseViewState) {
+        Log.d(TAG, "new viewState: $state")
         when (state) {
             is BaseViewState.Failure -> {
                 handleExceptions(state.exception)
-                enableUI(true)
+                viewModel.setReadyState()
             }
             is BaseViewState.Loading -> {
                 enableUI(false)
@@ -96,7 +100,8 @@ class MoviesMasterFragment : Fragment() {
     }
 
     private fun handleExceptions(e: Exception) {
-
+        Log.w(TAG, "$TAG: Exception thrown: ${e.message ?: "No message"}")
+        showMessage(getString(R.string.msg_error_default))
     }
 
     private fun updateUI() {
@@ -131,4 +136,9 @@ class MoviesMasterFragment : Fragment() {
             .setPositiveButton(R.string.button_accept) { _, _ -> }
             .show()
     }
+
+    private fun showMessage(msg: String) {
+        binding.root.snack(msg, Snackbar.LENGTH_LONG)
+    }
+
 }

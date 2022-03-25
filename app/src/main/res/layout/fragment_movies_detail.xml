@@ -84,7 +84,7 @@
                     android:padding="16dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="4dp"
-                    app:layout_constraintDimensionRatio="H,4:3"
+                    app:layout_constraintDimensionRatio="H,3:4"
                     app:layout_constraintEnd_toStartOf="@+id/guideline_right"
                     app:layout_constraintStart_toStartOf="@+id/guideline_left"
                     app:layout_constraintTop_toBottomOf="@+id/txtTitle">

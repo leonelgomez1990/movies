@@ -26,6 +26,10 @@ class MoviesDetailViewModel @Inject constructor(
     init {
     }
 
+    fun setReadyState() {
+        _viewState.value = BaseViewState.Ready
+    }
+
     fun refreshUI() {
         getDetailsMovie(movie.id)
     }
