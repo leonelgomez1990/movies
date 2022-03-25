@@ -4,8 +4,11 @@ import android.util.Log
 import com.lgomez.movies.core.utils.MyResult
 import com.lgomez.movies.data.network.model.toDetailsMovie
 import com.lgomez.movies.data.network.model.toPopularMovie
+import com.lgomez.movies.domain.model.AppLanguage
 import com.lgomez.movies.domain.model.DetailsMovie
 import com.lgomez.movies.domain.model.PopularMovies
+
+private const val API_KEY = "0d4a85fde806c8c22ed4b13ac766d3ff"
 
 class MoviesNetworkDataSource(
     private val moviesProvider: MoviesProvider
@@ -20,7 +23,7 @@ class MoviesNetworkDataSource(
     suspend fun getPopularMovies(): MyResult<List<PopularMovies>> {
         return try {
             Log.d(TAG, "getPopularMovies:try to get data")
-            val apiResponse = moviesProvider.getPopularMovies()
+            val apiResponse = moviesProvider.getPopularMovies(API_KEY, AppLanguage.code, 1)
 
             Log.d(TAG, "getPopularMovies:try to convert object")
             movies = apiResponse?.results.map { it.toPopularMovie() } ?: emptyList()
@@ -36,7 +39,7 @@ class MoviesNetworkDataSource(
     suspend fun getDetailsMovie(movieId: Int): MyResult<DetailsMovie> {
         return try {
             Log.d(TAG, "getDetailsMovie($movieId):try to get data")
-            val apiResponse = moviesProvider.getDetailsMovie(movieId)
+            val apiResponse = moviesProvider.getDetailsMovie(movieId, API_KEY, AppLanguage.code)
 
             Log.d(TAG, "getDetailsMovie($movieId):try to convert object")
             val movie = apiResponse?.toDetailsMovie()
