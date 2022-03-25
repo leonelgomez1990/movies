@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.lgomez.movies.R
 import com.lgomez.movies.databinding.FragmentMoviesDetailBinding
 import com.lgomez.movies.ui.model.MovieUI
 import com.lgomez.movies.ui.viewmodels.MoviesDetailViewModel
@@ -86,7 +88,22 @@ class MoviesDetailFragment : Fragment() {
 
     private fun updateUI() {
         with(binding) {
-            textView.text = viewModel.movie.title
+            txtTitle.text = viewModel.movie.title
+            txtGenres.text = viewModel.movie.genres.joinToString()
+            txtLanguage.text =
+                resources.getString(
+                    R.string.fragment_movies_detail_language,
+                    viewModel.movie.originalLanguage
+                )
+            txtPopularity.text =
+                resources.getString(
+                    R.string.fragment_movies_detail_popularity,
+                    viewModel.movie.popularity
+                )
+            Glide.with(root)
+                .load(viewModel.movie.cover)
+                .centerCrop()
+                .into(imgCover)
         }
     }
 
