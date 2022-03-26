@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.lgomez.movies.core.utils.MyResult
 import com.lgomez.movies.core.utils.SingleLiveEvent
 import com.lgomez.movies.domain.model.PopularMovies
+import com.lgomez.movies.domain.usecases.ConfigureLanguage
 import com.lgomez.movies.domain.usecases.GetPopularMoviesUseCase
 import com.lgomez.movies.ui.model.MovieUI
 import com.lgomez.movies.ui.navigatorstates.MoviesMasterNavigatorStates
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MoviesMasterViewModel @Inject constructor(
-    val getPopularMoviesUseCase: GetPopularMoviesUseCase
+    val getPopularMoviesUseCase: GetPopularMoviesUseCase,
+    val configureLanguage: ConfigureLanguage
 ) : ViewModel() {
     private val _viewState: MutableLiveData<BaseViewState> = MutableLiveData()
     val viewState: LiveData<BaseViewState> get() = _viewState
@@ -29,7 +31,12 @@ class MoviesMasterViewModel @Inject constructor(
     val movies: LiveData<MutableList<PopularMovies>> get() = _movies
 
     init {
+        setLanguage()
         refreshUI()
+    }
+
+    fun setReadyState() {
+        _viewState.value = BaseViewState.Ready
     }
 
     fun goToMoviesDetail(movie: MovieUI) {
@@ -55,5 +62,9 @@ class MoviesMasterViewModel @Inject constructor(
         }
     }
 
-
+    private fun setLanguage() {
+        viewModelScope.launch {
+            configureLanguage()
+        }
+    }
 }

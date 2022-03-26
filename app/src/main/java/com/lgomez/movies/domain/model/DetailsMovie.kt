@@ -6,6 +6,6 @@ data class DetailsMovie(
     var cover: String,
     var genres: List<String>,
     var originalLanguage: String,
-    val popularity: Int,
+    val popularity: Double,
     val releaseDate: String
 )

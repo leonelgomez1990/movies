@@ -5,6 +5,6 @@ import com.lgomez.movies.domain.model.PopularMovies
 import com.lgomez.movies.domain.repositories.MoviesRepository
 
 class GetPopularMoviesUseCase(private val moviesRepository: MoviesRepository) {
-    suspend operator fun invoke(): MyResult<ArrayList<PopularMovies>> =
+    suspend operator fun invoke(): MyResult<List<PopularMovies>> =
         moviesRepository.getPopularMovies()
 }
