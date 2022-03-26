@@ -20,10 +20,10 @@ class MoviesNetworkDataSource(
 
     private var movies: List<PopularMovies> = emptyList()
 
-    suspend fun getPopularMovies(): MyResult<List<PopularMovies>> {
+    suspend fun getPopularMovies(page: Int = 1): MyResult<List<PopularMovies>> {
         return try {
-            Log.d(TAG, "getPopularMovies:try to get data")
-            val apiResponse = moviesProvider.getPopularMovies(API_KEY, AppLanguage.code, 1)
+            Log.d(TAG, "getPopularMovies:try to get data, on page=$page")
+            val apiResponse = moviesProvider.getPopularMovies(API_KEY, AppLanguage.code, page)
 
             Log.d(TAG, "getPopularMovies:try to convert object")
             movies = apiResponse?.results.map { it.toPopularMovie() } ?: emptyList()

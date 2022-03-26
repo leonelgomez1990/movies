@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.lgomez.movies.R
 import com.lgomez.movies.core.utils.snack
@@ -34,6 +35,7 @@ class MoviesMasterFragment : Fragment() {
     private var _binding: FragmentMoviesMasterBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MoviesMasterViewModel by activityViewModels()
+    private val adapter = PopularMoviesItemAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +43,7 @@ class MoviesMasterFragment : Fragment() {
     ): View? {
         _binding = FragmentMoviesMasterBinding.inflate(layoutInflater)
         setListeners()
+        setupRecyclerView()
         return binding.root
     }
 
@@ -109,24 +112,39 @@ class MoviesMasterFragment : Fragment() {
         }
     }
 
-    private fun setupPopularMoviesRecyclerView(list: MutableList<PopularMovies>) {
-        val adapter = PopularMoviesItemAdapter()
+    private fun setupRecyclerView() {
+        adapter.setData(mutableListOf())
+        adapter.onClickListener = { }
+        val layoutManager = GridLayoutManager(context, 2)
 
+        with(binding) {
+            rvMovies.setHasFixedSize(true)
+            rvMovies.layoutManager = layoutManager
+            rvMovies.adapter = adapter
+
+            rvMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (layoutManager.itemCount > 0) {
+                        viewModel.notifyLastSeen(
+                            layoutManager.findLastVisibleItemPosition(),
+                            layoutManager.itemCount
+                        )
+                    }
+                }
+            })
+        }
+    }
+
+    private fun setupPopularMoviesRecyclerView(list: MutableList<PopularMovies>) {
         if (list.isEmpty() && viewModel.viewState.value is BaseViewState.Ready) {
             showDialog(
                 resources.getString(R.string.msg_alert_empty_movies_title),
                 resources.getString(R.string.msg_alert_empty_movies_body)
             )
         }
-
         adapter.setData(list)
         adapter.onClickListener = { viewModel.goToMoviesDetail(it.toMovieUI()) }
-
-        with(binding) {
-            rvMovies.setHasFixedSize(true)
-            rvMovies.layoutManager = GridLayoutManager(context, 1)
-            rvMovies.adapter = adapter
-        }
     }
 
     private fun showDialog(title: String, message: String) {

@@ -1,5 +1,6 @@
 package com.lgomez.movies.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,11 @@ class MoviesMasterViewModel @Inject constructor(
     val getPopularMoviesUseCase: GetPopularMoviesUseCase,
     val configureLanguage: ConfigureLanguage
 ) : ViewModel() {
+
+    companion object {
+        const val TAG = "MoviesMasterViewModel"
+        const val PAGE_THRESHOLD = 2
+    }
     private val _viewState: MutableLiveData<BaseViewState> = MutableLiveData()
     val viewState: LiveData<BaseViewState> get() = _viewState
 
@@ -65,6 +71,25 @@ class MoviesMasterViewModel @Inject constructor(
     private fun setLanguage() {
         viewModelScope.launch {
             configureLanguage()
+        }
+    }
+
+    fun notifyLastSeen(last: Int, total: Int) {
+        if ((last + PAGE_THRESHOLD >= total) && (viewState.value != BaseViewState.Loading)) {
+            Log.d(TAG, "Load new page. last=$last, total=$total")
+            viewModelScope.launch {
+                _viewState.value = BaseViewState.Loading
+                when (val result = getPopularMoviesUseCase.checkNewPage(total)) {
+                    is MyResult.Failure -> {
+                        _viewState.value = BaseViewState.Failure(result.exception)
+                    }
+                    is MyResult.Success -> {
+                        _movies.value?.addAll(result.data.toMutableList())
+                        _movies.value = movies.value
+                        _viewState.value = BaseViewState.Ready
+                    }
+                }
+            }
         }
     }
 }
