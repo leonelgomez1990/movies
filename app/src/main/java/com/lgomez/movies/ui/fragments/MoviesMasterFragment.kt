@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -44,6 +45,7 @@ class MoviesMasterFragment : Fragment() {
         _binding = FragmentMoviesMasterBinding.inflate(layoutInflater)
         setListeners()
         setupRecyclerView()
+        setSearchView()
         return binding.root
     }
 
@@ -61,7 +63,17 @@ class MoviesMasterFragment : Fragment() {
     }
 
     private fun setListeners() {
-        binding.swipeRefresh.setOnRefreshListener { viewModel.refreshUI() }
+        binding.swipeRefresh.setOnRefreshListener {
+            //When swiping, clear filter field and refresh recycler view
+            binding.searchView.setQuery("", false);
+            binding.searchView.clearFocus()
+            viewModel.usingFilter = false
+            viewModel.refreshUI()
+        }
+        binding.swipeRefresh.setOnChildScrollUpCallback { _, _ ->
+            //Only swiping to refresh when recycler is on top of scrolling
+            binding.rvMovies.canScrollVertically(-1);
+        }
     }
 
     private fun handleNavigation(navigation: MoviesMasterNavigatorStates) {
@@ -157,6 +169,31 @@ class MoviesMasterFragment : Fragment() {
 
     private fun showMessage(msg: String) {
         binding.root.snack(msg, Snackbar.LENGTH_LONG)
+    }
+
+    private fun setSearchView() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                binding.searchView.clearFocus()
+                searchQuery(query)
+                return false
+            }
+
+            override fun onQueryTextChange(query: String): Boolean {
+                searchQuery(query)
+                return false
+            }
+        })
+    }
+
+    private fun searchQuery(query: String) {
+        adapter.filter(query)
+        if (query.isNotBlank()) {
+            viewModel.usingFilter = true
+            (binding.rvMovies.adapter as PopularMoviesItemAdapter).filter(query)
+        } else {
+            viewModel.usingFilter = false
+        }
     }
 
 }

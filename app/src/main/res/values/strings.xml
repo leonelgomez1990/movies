@@ -8,5 +8,6 @@
 
     <string name="fragment_movies_detail_language">"Idioma original: %s"</string>
     <string name="fragment_movies_detail_popularity">"Popularidad: %f"</string>
+    <string name="fragment_movies_master_search">Ingrese un título de película</string>
 
 </resources>

@@ -36,9 +36,12 @@ class MoviesMasterViewModel @Inject constructor(
     private val _movies: MutableLiveData<MutableList<PopularMovies>> = MutableLiveData()
     val movies: LiveData<MutableList<PopularMovies>> get() = _movies
 
+    var usingFilter = false
+
     init {
         setLanguage()
         refreshUI()
+        usingFilter = false
     }
 
     fun setReadyState() {
@@ -75,7 +78,7 @@ class MoviesMasterViewModel @Inject constructor(
     }
 
     fun notifyLastSeen(last: Int, total: Int) {
-        if ((last + PAGE_THRESHOLD >= total) && (viewState.value != BaseViewState.Loading)) {
+        if ((last + PAGE_THRESHOLD >= total) && (viewState.value != BaseViewState.Loading) && !usingFilter) {
             Log.d(TAG, "Load new page. last=$last, total=$total")
             viewModelScope.launch {
                 _viewState.value = BaseViewState.Loading
