@@ -7,10 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.lgomez.movies.R
 import com.lgomez.movies.core.utils.snack
@@ -34,6 +36,7 @@ class MoviesMasterFragment : Fragment() {
     private var _binding: FragmentMoviesMasterBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MoviesMasterViewModel by activityViewModels()
+    private val adapter = PopularMoviesItemAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,6 +44,8 @@ class MoviesMasterFragment : Fragment() {
     ): View? {
         _binding = FragmentMoviesMasterBinding.inflate(layoutInflater)
         setListeners()
+        setupRecyclerView()
+        setSearchView()
         return binding.root
     }
 
@@ -58,7 +63,17 @@ class MoviesMasterFragment : Fragment() {
     }
 
     private fun setListeners() {
-        binding.swipeRefresh.setOnRefreshListener { viewModel.refreshUI() }
+        binding.swipeRefresh.setOnRefreshListener {
+            //When swiping, clear filter field and refresh recycler view
+            binding.searchView.setQuery("", false);
+            binding.searchView.clearFocus()
+            viewModel.usingFilter = false
+            viewModel.refreshUI()
+        }
+        binding.swipeRefresh.setOnChildScrollUpCallback { _, _ ->
+            //Only swiping to refresh when recycler is on top of scrolling
+            binding.rvMovies.canScrollVertically(-1);
+        }
     }
 
     private fun handleNavigation(navigation: MoviesMasterNavigatorStates) {
@@ -109,24 +124,39 @@ class MoviesMasterFragment : Fragment() {
         }
     }
 
-    private fun setupPopularMoviesRecyclerView(list: MutableList<PopularMovies>) {
-        val adapter = PopularMoviesItemAdapter()
+    private fun setupRecyclerView() {
+        adapter.setData(mutableListOf())
+        adapter.onClickListener = { }
+        val layoutManager = GridLayoutManager(context, 2)
 
+        with(binding) {
+            rvMovies.setHasFixedSize(true)
+            rvMovies.layoutManager = layoutManager
+            rvMovies.adapter = adapter
+
+            rvMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (layoutManager.itemCount > 0) {
+                        viewModel.notifyLastSeen(
+                            layoutManager.findLastVisibleItemPosition(),
+                            layoutManager.itemCount
+                        )
+                    }
+                }
+            })
+        }
+    }
+
+    private fun setupPopularMoviesRecyclerView(list: MutableList<PopularMovies>) {
         if (list.isEmpty() && viewModel.viewState.value is BaseViewState.Ready) {
             showDialog(
                 resources.getString(R.string.msg_alert_empty_movies_title),
                 resources.getString(R.string.msg_alert_empty_movies_body)
             )
         }
-
         adapter.setData(list)
         adapter.onClickListener = { viewModel.goToMoviesDetail(it.toMovieUI()) }
-
-        with(binding) {
-            rvMovies.setHasFixedSize(true)
-            rvMovies.layoutManager = GridLayoutManager(context, 1)
-            rvMovies.adapter = adapter
-        }
     }
 
     private fun showDialog(title: String, message: String) {
@@ -139,6 +169,31 @@ class MoviesMasterFragment : Fragment() {
 
     private fun showMessage(msg: String) {
         binding.root.snack(msg, Snackbar.LENGTH_LONG)
+    }
+
+    private fun setSearchView() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                binding.searchView.clearFocus()
+                searchQuery(query)
+                return false
+            }
+
+            override fun onQueryTextChange(query: String): Boolean {
+                searchQuery(query)
+                return false
+            }
+        })
+    }
+
+    private fun searchQuery(query: String) {
+        adapter.filter(query)
+        if (query.isNotBlank()) {
+            viewModel.usingFilter = true
+            (binding.rvMovies.adapter as PopularMoviesItemAdapter).filter(query)
+        } else {
+            viewModel.usingFilter = false
+        }
     }
 
 }
