@@ -45,6 +45,9 @@ class MoviesMasterFragment : Fragment() {
         _binding = FragmentMoviesMasterBinding.inflate(layoutInflater)
         setListeners()
         setupRecyclerView()
+        viewModel.movies.observe(
+            viewLifecycleOwner,
+            Observer { setupPopularMoviesRecyclerView(it) })
         setSearchView()
         return binding.root
     }
@@ -57,17 +60,12 @@ class MoviesMasterFragment : Fragment() {
     private fun setObservers() {
         viewModel.navigation.observe(viewLifecycleOwner, Observer { handleNavigation(it) })
         viewModel.viewState.observe(viewLifecycleOwner, Observer { handleViewStates(it) })
-        viewModel.movies.observe(
-            viewLifecycleOwner,
-            Observer { setupPopularMoviesRecyclerView(it) })
     }
 
     private fun setListeners() {
         binding.swipeRefresh.setOnRefreshListener {
             //When swiping, clear filter field and refresh recycler view
-            binding.searchView.setQuery("", false);
-            binding.searchView.clearFocus()
-            viewModel.usingFilter = false
+            clearFilter()
             viewModel.refreshUI()
         }
         binding.swipeRefresh.setOnChildScrollUpCallback { _, _ ->
@@ -150,13 +148,17 @@ class MoviesMasterFragment : Fragment() {
 
     private fun setupPopularMoviesRecyclerView(list: MutableList<PopularMovies>) {
         if (list.isEmpty() && viewModel.viewState.value is BaseViewState.Ready) {
-            showDialog(
-                resources.getString(R.string.msg_alert_empty_movies_title),
-                resources.getString(R.string.msg_alert_empty_movies_body)
-            )
+            showEmptyListDialog()
         }
         adapter.setData(list)
         adapter.onClickListener = { viewModel.goToMoviesDetail(it.toMovieUI()) }
+    }
+
+    private fun showEmptyListDialog() {
+        showDialog(
+            resources.getString(R.string.msg_alert_empty_movies_title),
+            resources.getString(R.string.msg_alert_empty_movies_body)
+        )
     }
 
     private fun showDialog(title: String, message: String) {
@@ -172,10 +174,11 @@ class MoviesMasterFragment : Fragment() {
     }
 
     private fun setSearchView() {
+        clearFilter()
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 binding.searchView.clearFocus()
-                searchQuery(query)
+                searchQuery(query, true)
                 return false
             }
 
@@ -186,14 +189,29 @@ class MoviesMasterFragment : Fragment() {
         })
     }
 
-    private fun searchQuery(query: String) {
+    private fun searchQuery(query: String, submit: Boolean = false) {
         adapter.filter(query)
         if (query.isNotBlank()) {
             viewModel.usingFilter = true
-            (binding.rvMovies.adapter as PopularMoviesItemAdapter).filter(query)
+            val size = (binding.rvMovies.adapter as PopularMoviesItemAdapter).filter(query)
+            if (size == 0) {
+                if (submit)
+                    showDialog(
+                        resources.getString(R.string.msg_alert_empty_movies_title),
+                        resources.getString(R.string.msg_alert_empty_movies_search)
+                    )
+                else
+                    showMessage(getString(R.string.msg_alert_empty_movies_search))
+            }
         } else {
             viewModel.usingFilter = false
         }
+    }
+
+    private fun clearFilter() {
+        binding.searchView.setQuery("", false);
+        binding.searchView.clearFocus()
+        viewModel.usingFilter = false
     }
 
 }
