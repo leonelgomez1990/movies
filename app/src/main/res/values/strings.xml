@@ -9,5 +9,6 @@
     <string name="fragment_movies_detail_language">"Idioma original: %s"</string>
     <string name="fragment_movies_detail_popularity">"Popularidad: %f"</string>
     <string name="fragment_movies_master_search">Ingrese un título de película</string>
+    <string name="msg_alert_empty_movies_search">No se encontraron películas con el filtro aplicado</string>
 
 </resources>

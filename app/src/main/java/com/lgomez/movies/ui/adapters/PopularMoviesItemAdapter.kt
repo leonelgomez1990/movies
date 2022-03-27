@@ -34,7 +34,7 @@ class PopularMoviesItemAdapter() : RecyclerView.Adapter<PopularMoviesItemAdapter
 
     override fun getItemCount(): Int = items.size
 
-    fun filter(text: String) {
+    fun filter(text: String) : Int {
         var filteredList = mutableListOf<PopularMovies>()
         if (text.isEmpty()) {
             filteredList = itemsBackup
@@ -45,6 +45,7 @@ class PopularMoviesItemAdapter() : RecyclerView.Adapter<PopularMoviesItemAdapter
             }
         }
         items = filteredList
+        return itemCount
     }
 
     val filter: Filter = object : Filter() {
